@@ -8,14 +8,13 @@ As fabric is one of the cli's dependencies, you don't have to install it separat
 Note that the functions don't have to be decorated with the `@task` decorator as they're directly called from the cli's code just like any other python function.
 
 ```shell
-cfy dev --tasks-file my_tasks.py -v my_task arg1 arg2 ...
+cfy dev --tasks-file my_tasks.py -v my_task --arg1=something --arg2=otherthing ...
+cfy dev -v my_task arg1_value arg2_value ...
 ```
 
 `--tasks-file my_tasks.py` can be omitted if a `tasks.py` file exists in your current working directory.
 
-This supplies an easy way to run personalized, complex ssh scripts on the manager without having to connect to it.
-
-So for instance, if you want to echo something in your currently running manager, all you have to do is supply a tasks file with the following:
+So for instance, if you want to echo something in your currently running manager, all you have to do is supply a tasks.py file with the following:
 
 ```python
 from fabric.api import run
@@ -32,4 +31,4 @@ cfy dev echo something!
 Note that the `dev` command doesn't appear in cfy by default when running `cfy -h`.
 You can run `cfy dev -h` for a command reference.
 
-Please fork this repository to contribute tasks.
+Cloudify provides a tasks [repo]({{ page.cli_fabric_tasks_repo }}) from which users can obtain tasks and to which developers should contribute for the benefit of all.
