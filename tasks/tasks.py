@@ -1,7 +1,9 @@
+# flake8: noqa
+
 from contextlib import contextmanager as _contextmanager
 from os.path import dirname
 
-from fabric.api import *  # NOQA
+from fabric.api import *
 from fabric.contrib import files
 
 MANAGER_BRANCH = 'master'
@@ -14,26 +16,25 @@ CLOUDIFY_MANAGER = 'cloudify-manager'
 MANAGER_REST = 'cloudify-manager/rest-service/manager_rest'
 WORKER_INSTALLER = 'cloudify-manager/plugins/agent-installer/worker_installer'
 PLUGIN_INSTALLER = 'cloudify-manager/plugins/plugin-installer/plugin_installer'
-W_WORKER_INSTALLER = 'cloudify-manager/plugins/windows-agent-installer/windows_agent_installer'  # NOQA
-W_PLUGIN_INSTALLER = 'cloudify-manager/plugins/windows-plugin-installer/windows_plugin_installer'  # NOQA
+W_WORKER_INSTALLER = 'cloudify-manager/plugins/windows-agent-installer/windows_agent_installer'
+W_PLUGIN_INSTALLER = 'cloudify-manager/plugins/windows-plugin-installer/windows_plugin_installer'
+RIEMANN_CONTROLLER  = 'cloudify-manager/plugins/riemann-controller/riemann_controller'
 WORKFLOWS = 'cloudify-manager/workflows/workflows'
 SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/system_workflows'
 DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
 REST_CLIENT = 'cloudify-rest-client/cloudify_rest_client'
 
+
 # agent package details
 VIRTUALENV_PACKAGE = '/home/vagrant/package'
 VIRTUALENV_PARENT = '{0}/linux'.format(VIRTUALENV_PACKAGE)
 VIRTUALENV_PATH = '{0}/env'.format(VIRTUALENV_PARENT)
-AGENT_PACKAGE_PATH = '/opt/manager/resources/packages/agents/Ubuntu-agent.tar.gz'  # NOQA
-VIRTUALENV_PATH_MANAGER = '/opt/celery/cloudify.management__worker/env'
+AGENT_PACKAGE_PATH = '/opt/manager/resources/packages/agents/Ubuntu-agent.tar.gz'
 
-# file server paths
-PACKAGES_PATH = '/opt/manager/resources/packages'
-AGENTS_PATH = '{0}/agents'
-SCRIPTS_PATH = '{0}/scripts'
-AGENTS_PATH = '{0}/templates'
+VIRTUALENV_PATH_MANAGER = '/opt/celery/cloudify.management__worker/env'
+VIRTUALENV_PATH_CELERY_MANAGER = '/opt/celery/cloudify.management__worker/env'
+MANAGER_PACKAGES_INSTALLED_INDICATOR = '/home/vagrant/manager_packages_installed'
 
 # packages to install (in this order) for the agent package virtual env
 AGENT_PACKAGES = [
@@ -43,7 +44,7 @@ AGENT_PACKAGES = [
         WORKER_INSTALLER,
         PLUGIN_INSTALLER,
         W_WORKER_INSTALLER,
-        W_PLUGIN_INSTALLER
+        W_PLUGIN_INSTALLER,
     ]
 ]
 
@@ -63,6 +64,25 @@ AGENT_LINKS = {
     }
 }
 
+MANAGER_PACKAGES = [
+    dirname(package) for package in [
+        DSL_PARSER,
+        MANAGER_REST,
+    ]
+]
+
+MANAGER_CELERY_PACKAGES = [
+    dirname(package) for package in [
+        CLOUDIFY_COMMON,
+        PLUGIN_INSTALLER,
+        WORKER_INSTALLER,
+        RIEMANN_CONTROLLER,
+        REST_CLIENT,
+        SYSTEM_WORKFLOWS,
+        WORKFLOWS,
+    ]
+]
+
 # links to host machine source code for the rest-service
 # and celery management virtualenvs
 MANAGER_LINKS = {
@@ -76,10 +96,11 @@ MANAGER_LINKS = {
     '/opt/celery/cloudify.management__worker/env': {
         'cloudify-manager-{}'.format(MANAGER_BRANCH): CLOUDIFY_MANAGER,
     },
-    '/opt/celery/cloudify.management__worker/env/lib/python2.7/site-packages': {  # NOQA
+    '/opt/celery/cloudify.management__worker/env/lib/python2.7/site-packages': {
         'cloudify': CLOUDIFY_COMMON,
         'plugin_installer': PLUGIN_INSTALLER,
         'worker_installer': WORKER_INSTALLER,
+        'riemann_controller': RIEMANN_CONTROLLER,
         'cloudify_rest_client': REST_CLIENT,
         'system_workflows': SYSTEM_WORKFLOWS,
         'workflows': WORKFLOWS,
@@ -94,10 +115,11 @@ managed_services = [
 ]
 
 
+
 def setup_env(link_manager=True, create_package=True):
     _stop_services()
     _update_agent_package(create_package)
-    _link_manager(link_manager)
+    _update_and_link_manager(link_manager)
     _start_services()
 
 
@@ -116,27 +138,30 @@ def _start_services():
         sudo('start {}'.format(service))
 
 
-def _link_manager(link_manager):
+def _update_and_link_manager(link_manager):
     if link_manager:
+        if not files.exists(MANAGER_PACKAGES_INSTALLED_INDICATOR):
+            with virtualenv(VIRTUALENV_PATH_MANAGER):
+                for package in MANAGER_PACKAGES:
+                    _pip_install('{}/{}'.format(CODE_BASE, package))
+            with virtualenv(VIRTUALENV_PATH_CELERY_MANAGER):
+                for package in MANAGER_CELERY_PACKAGES:
+                    _pip_install('{}/{}'.format(CODE_BASE, package))
+            run('touch {}'.format(MANAGER_PACKAGES_INSTALLED_INDICATOR))
         _link(MANAGER_LINKS)
 
 
 def _update_agent_package(create_package):
-    if not files.exists(VIRTUALENV_PARENT):
-        run('mkdir -p {0}'.format(VIRTUALENV_PARENT))
-        run('virtualenv {0}'.format(VIRTUALENV_PATH))
-        with virtualenv(VIRTUALENV_PATH):
-            for package in AGENT_PACKAGES:
-                _pip_install('{}/{}'.format(CODE_BASE, package))
-            for dependency in AGENT_DEPENDENCIES:
-                _pip_install(dependency)
-        with virtualenv(VIRTUALENV_PATH_MANAGER):
-            for package in AGENT_PACKAGES:
-                _pip_install('{}/{}'.format(CODE_BASE, package))
-            for dependency in AGENT_DEPENDENCIES:
-                _pip_install(dependency)
-        _link(AGENT_LINKS)
     if create_package:
+        if not files.exists(VIRTUALENV_PARENT):
+            run('mkdir -p {0}'.format(VIRTUALENV_PARENT))
+            run('virtualenv {0}'.format(VIRTUALENV_PATH))
+            with virtualenv(VIRTUALENV_PATH):
+                for dependency in AGENT_DEPENDENCIES:
+                    _pip_install(dependency)
+                for package in AGENT_PACKAGES:
+                    _pip_install('{}/{}'.format(CODE_BASE, package))
+            _link(AGENT_LINKS)
         run('tar czf package.tar.gz package --dereference')
         sudo('cp package.tar.gz {}'.format(AGENT_PACKAGE_PATH))
 
