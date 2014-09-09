@@ -112,8 +112,8 @@ MANAGER_LINKS = {
 managed_services = [
     'manager',
     'celeryd-cloudify-management'
+    'riemann'
 ]
-
 
 
 def setup_env(link_manager=True, create_package=True):
