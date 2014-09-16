@@ -73,11 +73,11 @@ MANAGER_PACKAGES = [
 
 MANAGER_CELERY_PACKAGES = [
     dirname(package) for package in [
+        REST_CLIENT,
         CLOUDIFY_COMMON,
         PLUGIN_INSTALLER,
         WORKER_INSTALLER,
         RIEMANN_CONTROLLER,
-        REST_CLIENT,
         SYSTEM_WORKFLOWS,
         WORKFLOWS,
     ]
