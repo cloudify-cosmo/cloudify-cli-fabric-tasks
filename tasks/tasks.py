@@ -111,7 +111,7 @@ MANAGER_LINKS = {
 # setup_env task
 managed_services = [
     'manager',
-    'celeryd-cloudify-management'
+    'celeryd-cloudify-management',
     'riemann'
 ]
 
