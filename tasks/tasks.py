@@ -24,7 +24,7 @@ SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/system_workflows'
 DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
 REST_CLIENT = 'cloudify-rest-client/cloudify_rest_client'
-
+PACAKGER_UBUNTU = 'cloudify-packager-ubuntu'
 
 # agent package details
 VIRTUALENV_PACKAGE = '/home/vagrant/package'
@@ -86,6 +86,11 @@ MANAGER_CELERY_PACKAGES = [
 # links to host machine source code for the rest-service
 # and celery management virtualenvs
 MANAGER_LINKS = {
+    '/opt/manager/resources/packages': {
+        # we link to the same dir holding both ubuntu templates and scripts
+        'scripts': '{}/package-configuration/ubuntu-agent'.format(PACAKGER_UBUNTU),
+        'templates': '{}/package-configuration/ubuntu-agent'.format(PACAKGER_UBUNTU)
+    },
     '/opt/manager': {
         'cloudify-manager-{}'.format(MANAGER_BRANCH): CLOUDIFY_MANAGER,
     },
