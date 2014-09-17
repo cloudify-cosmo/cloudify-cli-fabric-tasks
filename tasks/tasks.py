@@ -19,8 +19,7 @@ PLUGIN_INSTALLER = 'cloudify-manager/plugins/plugin-installer/plugin_installer'
 W_WORKER_INSTALLER = 'cloudify-manager/plugins/windows-agent-installer/windows_agent_installer'
 W_PLUGIN_INSTALLER = 'cloudify-manager/plugins/windows-plugin-installer/windows_plugin_installer'
 RIEMANN_CONTROLLER  = 'cloudify-manager/plugins/riemann-controller/riemann_controller'
-WORKFLOWS = 'cloudify-manager/workflows/workflows'
-SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/system_workflows'
+SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/cloudify_system_workflows'
 DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
 REST_CLIENT = 'cloudify-rest-client/cloudify_rest_client'
@@ -107,8 +106,7 @@ MANAGER_LINKS = {
         'worker_installer': WORKER_INSTALLER,
         'riemann_controller': RIEMANN_CONTROLLER,
         'cloudify_rest_client': REST_CLIENT,
-        'system_workflows': SYSTEM_WORKFLOWS,
-        'workflows': WORKFLOWS,
+        'cloudify_system_workflows': SYSTEM_WORKFLOWS,
     }
 }
 
