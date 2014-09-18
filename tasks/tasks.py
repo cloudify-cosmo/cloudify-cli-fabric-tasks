@@ -23,6 +23,7 @@ SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/cloudify_system_workflows'
 DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
 REST_CLIENT = 'cloudify-rest-client/cloudify_rest_client'
+AMQP_INFLUXDB = 'cloudify-amqp-influxdb/amqp_influxdb'
 PACKAGER_UBUNTU = 'cloudify-packager-ubuntu'
 
 # agent package details
@@ -67,6 +68,7 @@ MANAGER_PACKAGES = [
     dirname(package) for package in [
         DSL_PARSER,
         MANAGER_REST,
+        AMQP_INFLUXDB,
     ]
 ]
 
@@ -95,6 +97,7 @@ MANAGER_LINKS = {
     '/opt/manager/lib/python2.7/site-packages': {
         'dsl_parser': DSL_PARSER,
         'manager_rest': MANAGER_REST,
+        'amqp_influxdb': AMQP_INFLUXDB,
     },
     '/opt/celery/cloudify.management__worker/env': {
         'cloudify-manager-{}'.format(MANAGER_BRANCH): CLOUDIFY_MANAGER,
@@ -114,6 +117,7 @@ MANAGER_LINKS = {
 managed_services = [
     'manager',
     'celeryd-cloudify-management',
+    'amqpflux',
     'riemann'
 ]
 
