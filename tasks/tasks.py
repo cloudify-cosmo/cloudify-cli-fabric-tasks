@@ -19,6 +19,7 @@ PLUGIN_INSTALLER = 'cloudify-manager/plugins/plugin-installer/plugin_installer'
 W_WORKER_INSTALLER = 'cloudify-manager/plugins/windows-agent-installer/windows_agent_installer'
 W_PLUGIN_INSTALLER = 'cloudify-manager/plugins/windows-plugin-installer/windows_plugin_installer'
 RIEMANN_CONTROLLER  = 'cloudify-manager/plugins/riemann-controller/riemann_controller'
+SCRIPT_RUNNER = 'cloudify-script-plugin/script_runner'
 SYSTEM_WORKFLOWS = 'cloudify-manager/workflows/cloudify_system_workflows'
 DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
@@ -45,11 +46,13 @@ AGENT_PACKAGES = [
         PLUGIN_INSTALLER,
         W_WORKER_INSTALLER,
         W_PLUGIN_INSTALLER,
+        SCRIPT_RUNNER,
     ]
 ]
 
 AGENT_DEPENDENCIES = [
-    'celery==3.0.24'
+    'celery==3.0.24',
+    'pyzmq==14.3.1',
 ]
 
 # links to host machine source code for the agent virtualenv
@@ -61,6 +64,7 @@ AGENT_LINKS = {
         'worker_installer': WORKER_INSTALLER,
         'windows_agent_installer': W_WORKER_INSTALLER,
         'windows_plugin_installer': W_PLUGIN_INSTALLER,
+        'script_runner': SCRIPT_RUNNER,
     }
 }
 
@@ -118,7 +122,7 @@ managed_services = [
     'manager',
     'celeryd-cloudify-management',
     'amqpflux',
-    'riemann'
+    'riemann',
 ]
 
 
