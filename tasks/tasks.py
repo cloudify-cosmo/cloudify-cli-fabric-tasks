@@ -200,15 +200,15 @@ def virtualenv(VIRTUALENV_PATH):
         yield
 
 
-def upload_agent_to_manager():
+def upload_agent_to_manager(distro):
     """see instructions for creating your own agent at http://getcloudify.org
     under Guides - Creating a Cloudify agent.
     """
-    put('/cloudify-agent/centos-agent.tar.gz',
+    put('/cloudify-agent/{0}-agent.tar.gz'.format(distro),
         '/opt/manager/resources/packages/agents/')
-    put('/cloudify-agent/centos-celeryd-cloudify.init.template',
+    put('/cloudify-agent/{0}-celeryd-cloudify.init.template'.format(distro),
         '/opt/manager/resources/packages/templates/')
-    put('/cloudify-agent/centos-celeryd-cloudify.conf.template',
+    put('/cloudify-agent/{0}-celeryd-cloudify.conf.template'.format(distro),
         '/opt/manager/resources/packages/templates/')
-    put('/cloudify-agent/centos-agent-disable-requiretty.sh',
+    put('/cloudify-agent/{0}-agent-disable-requiretty.sh'.format(distro),
         '/opt/manager/resources/packages/scripts/')
