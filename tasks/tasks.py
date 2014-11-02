@@ -25,7 +25,7 @@ DSL_PARSER = 'cloudify-dsl-parser/dsl_parser'
 CLOUDIFY_COMMON = 'cloudify-plugins-common/cloudify'
 REST_CLIENT = 'cloudify-rest-client/cloudify_rest_client'
 AMQP_INFLUXDB = 'cloudify-amqp-influxdb/amqp_influxdb'
-PACKAGER_UBUNTU = 'cloudify-packager-ubuntu'
+PACKAGER_UBUNTU = 'cloudify-packager'
 
 # agent package details
 VIRTUALENV_PACKAGE = '/home/vagrant/package'
